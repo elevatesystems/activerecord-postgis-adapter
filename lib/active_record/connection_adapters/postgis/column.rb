@@ -77,6 +77,23 @@ module ActiveRecord  # :nodoc:
           super
         end
 
+        # Rails 8.2's JSON schema cache holds plain values, so the RGeo
+        # feature module is stored by type name and the limit's keys come
+        # back as strings.
+        def as_schema_json
+          json = super
+          json["geometric_type"] = @geometric_type&.type_name
+          json
+        end
+
+        def init_from_schema_json(coder, references)
+          if coder["geometric_type"]
+            coder["geometric_type"] = RGeo::ActiveRecord.geometric_type_from_name(coder["geometric_type"])
+          end
+          coder["limit"] = coder["limit"].transform_keys(&:to_sym) if coder["limit"].is_a?(Hash)
+          super
+        end
+
         def ==(other)
           other.is_a?(Column) &&
             super &&

@@ -22,6 +22,19 @@ module ActiveRecord
           end
           protected attr_reader :geographic, :factory_attrs
 
+          def as_schema_json
+            json = super
+            json["geographic"] = geographic
+            json["factory_attrs"] = factory_attrs
+            json
+          end
+
+          def init_from_schema_json(coder, references)
+            super
+            @geographic = coder["geographic"]
+            @factory_attrs = coder["factory_attrs"].transform_keys(&:to_sym).freeze
+          end
+
           # sql_type: geometry, geometry(Point), geometry(Point,4326), ...
           #
           # returns [geo_type, srid, has_z, has_m]

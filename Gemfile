@@ -35,3 +35,4 @@ group :development do
   gem "sqlite3"
   gem "msgpack"
 end
+gem "rgeo-activerecord", path: ENV.fetch("RGEO_AR_PATH", "../rgeo-activerecord") if ENV["RGEO_AR_PATH"]

@@ -11,9 +11,9 @@ module ActiveRecord  # :nodoc:
         end
 
         def all
-          info = @adapter.query(
-            "SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{@table_name}'"
-          )
+          sql = "SELECT f_geometry_column,coord_dimension,srid,type FROM geometry_columns WHERE f_table_name='#{@table_name}'"
+          # Rails 8.2 replaced the adapter's #query with #query_rows.
+          info = @adapter.respond_to?(:query_rows) ? @adapter.query_rows(sql, "SCHEMA") : @adapter.query(sql)
           result = {}
           info.each do |row|
             name = row[0]

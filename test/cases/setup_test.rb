@@ -14,7 +14,12 @@ module PostGIS
         spatial_ref_sys
         topology
       ]
-      assert_equal expect_to_ignore, ::ActiveRecord::SchemaDumper.ignore_tables
+      ignored = if ::ActiveRecord.respond_to?(:schema_ignored_tables)
+                  ::ActiveRecord.schema_ignored_tables
+                else
+                  ::ActiveRecord::SchemaDumper.ignore_tables
+                end
+      assert_equal expect_to_ignore, ignored
     end
   end
 end
